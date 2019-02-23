@@ -2,3 +2,4 @@
 ipgeo/ips.txt
 ipgeo/locations.txt
 *.pkl
+scraper/iplist.txt
