@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Heatmaps</title>
+    <style>
+        /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+</head>
+
+<body>
+    <input type="file" id="files" name="files[]" multiple />
+    <output id="list"></output>
+
+    <script>
+        function handleFileSelect(evt) {
+            console.log("UPLOADED");
+            var files = evt.target.files;
+
+            var output = [];
+            for (var i = 0, f; f = files[i]; i++) {
+                for (var i = 0, f; f = files[i]; i++) {
+
+                    var reader = new FileReader();
+                    reader.onload = (function (reader) {
+                        return function () {
+                            var contents = reader.result;
+                            var lines = contents.split('\n');
+
+                            for (var i = 0; i < lines.length; i++) {
+                                parts = lines[i].split(",");
+                                console.log("READ: " + parts[0], parts[1]);
+                                addLocation(parts[0], parts[1]);
+                            }
+                            initMap();
+                        }
+                    })(reader);
+
+                    reader.readAsText(f);
+                }
+            }
+        }
+        document.getElementById('files').addEventListener('change', handleFileSelect, false);
+    </script>
+
+    <div id="map"></div>
+    <script>
+
+        // This example requires the Visualization library. Include the libraries=visualization
+        // parameter when you first load the API. For example:
+        // <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=visualization">
+
+        var map, heatmap;
+        var locations = [];
+
+
+        function addLocation() {
+            locations.push(new google.maps.LatLng(arguments[0], arguments[1]));
+        }
+
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 13,
+                center: { lat: 37.7828, lng: -122.45 },
+                mapTypeId: 'satellite'
+            });
+
+            heatmap = new google.maps.visualization.HeatmapLayer({
+                data: getPoints(),
+                map: map
+            });
+        }
+
+        function toggleHeatmap() {
+            heatmap.setMap(heatmap.getMap() ? null : map);
+        }
+
+        function changeGradient() {
+            var gradient = [
+                'rgba(0, 255, 255, 0)',
+                'rgba(0, 255, 255, 1)',
+                'rgba(0, 191, 255, 1)',
+                'rgba(0, 127, 255, 1)',
+                'rgba(0, 63, 255, 1)',
+                'rgba(0, 0, 255, 1)',
+                'rgba(0, 0, 223, 1)',
+                'rgba(0, 0, 191, 1)',
+                'rgba(0, 0, 159, 1)',
+                'rgba(0, 0, 127, 1)',
+                'rgba(63, 0, 91, 1)',
+                'rgba(127, 0, 63, 1)',
+                'rgba(191, 0, 31, 1)',
+                'rgba(255, 0, 0, 1)'
+            ]
+            heatmap.set('gradient', heatmap.get('gradient') ? null : gradient);
+        }
+
+        function changeRadius() {
+            heatmap.set('radius', heatmap.get('radius') ? null : 20);
+        }
+
+        function changeOpacity() {
+            heatmap.set('opacity', heatmap.get('opacity') ? null : 0.2);
+        }
+
+        // Heatmap data: 500 Points
+        function getPoints() {
+
+            return locations;
+        }
+    </script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key= AIzaSyC9XeNY7D97RCMVhkhZNJB7jQ7gz0lXlcg&libraries=visualization&callback=initMap">
+    </script>
+</body>
+
+</html>
