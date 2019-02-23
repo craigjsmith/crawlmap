@@ -112,8 +112,6 @@ if action == "gather":
     crawlAndBuild("https://www.hackerone.com/blog/hacker-blogs-we-love-reading",0)
     saveGraph()
     ipfile.close()
-    nx.draw(g,with_labels=True)
-    plt.show()
 elif action == "plot":
     ipfile.close()
     savename = input("name of pickle file to plot: ") + ".pkl"
