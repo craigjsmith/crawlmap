@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from urllib.request import urlopen
 import time
 import socket
+import os
 
 g = nx.DiGraph() #graph object
 l = [] #list of last visited nodes in crawl
@@ -21,6 +22,7 @@ def saveIp(link):
         pass
 
 def getBaseAddress(url):
+    url = url.strip().rstrip()
     url = removeMostOfAddress(url)
     url = url.replace("https://","")
     url = url.replace("http://","")
@@ -97,33 +99,44 @@ def crawlAndBuild(startUrl,depth):
         print("\t" * depth + "Starting " + str(counter) + " out of " + str(len(linkList)))
         counter = counter + 1
         g.add_node(link)
-        g.add_edge(startUrl,link)
+        g.add_edge(getBaseAddress(startUrl),link)
         saveIp(link)
         crawlAndBuild(fullLink, depth + 1)
     if depth == 0:
         print("Finished Crawling")
 
-
-action = input("gather, or plot: ")
-if action == "gather":
-    maxDepth = int(input("Max Depth of Tree: "))
-    savename = input("Name to save map file: ") + ".pkl"
-    #load if the file exists
-    crawlAndBuild("https://www.hackerone.com/blog/hacker-blogs-we-love-reading",0)
-    saveGraph()
-    ipfile.close()
-elif action == "plot":
-    ipfile.close()
-    savename = input("name of pickle file to plot: ") + ".pkl"
-    loadGraph()
-    nx.draw(g,with_labels=True)
-    plt.show()
-
-
-
-
-
-
+while True:
+    action = input("Command (help for options): ")
+    clear = True
+    if action == "gather":
+        maxDepth = int(input("Max Depth of Tree: "))
+        savename = input("Name to save map file: ") + ".pkl"
+        startingUrl = input("URL to start search: ")
+        #https://www.hackerone.com/blog/hacker-blogs-we-love-reading
+        crawlAndBuild(startingUrl,0)
+        saveGraph()
+        ipfile.close()
+    elif action == "plot":
+        ipfile.close()
+        savename = input("name of pickle file to plot: ") + ".pkl"
+        loadGraph()
+        nx.draw(g,with_labels=True)
+        plt.show()
+    elif action == "ipsFromPickle":
+        pass
+    elif action == "exit":
+        exit()
+    elif action == "help":
+        clear = False
+        print("gather")
+        print("plot")
+        print("ipsFromPickle")
+        print("exit")
+    else:
+        print("Not a valid command")
+        clear = False
+    if clear:
+        os.system('cls' if os.name == 'nt' else 'clear')
 
 ##g.add_node("name")
 ##g.add_edge("firstNode","ToSecondNode")
