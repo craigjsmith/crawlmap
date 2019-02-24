@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from urllib.request import urlopen
 import socket
 from networkx import convert_matrix
-import pandas as pd
+#import pandas as pd
 
 g = nx.DiGraph() #graph object
 l = [] #list of last visited nodes in crawl
@@ -77,13 +77,16 @@ def getHtml(link):
         return False
 
 def addOne():
-    print(len(l))
+    global maxDepth
+    maxDepth = 1
     for link in l:
-        html = getHtml(link)
-        linkList = getLinksFromHtml(html)
-        for link2 in linkList:
-            g.add_node(getBaseAddress(link2))
-            g.add_edge(getBaseAddress(link),getBaseAddress(link2))
+        crawlAndBuild(link,0)
+#    for link in l:
+#        html = getHtml(link)[0]
+#        linkList = getLinksFromHtml(html)
+#        for link2 in linkList:
+#            g.add_node(getBaseAddress(link2))
+#            g.add_edge(getBaseAddress(link),getBaseAddress(link2))
     saveGraph()
     
 
@@ -105,7 +108,7 @@ def crawlAndBuild(startUrl,depth):
     counter = 1
     if lastRun:
         for link in linkList:
-            if not isInList(link,linkList):
+            if not isInList(link,l):
                 l.append(link)
     for link in linkList:
         fullLink = link
@@ -132,7 +135,13 @@ while True:
     elif action == "plot":
         savename = input("name of pickle file to plot: ") + ".pkl"
         loadGraph()
-        nx.draw_circular(g,with_labels=True,font_size=1,node_size=2)
+        #pos = nx.fruchterman_reingold_layout(g,with_labels=True,font_size=1,node_size=2)
+        positions = nx.spring_layout(g)
+        #positions = None
+        #nx.draw(g,with_labels=True,font_size=2,node_size=5,pos=positions)
+        nx.draw_networkx_nodes(g,pos=positions,node_size=2)
+        nx.draw_networkx_edges(g,pos=positions,width=.3,arrowsize=1,alpha=.4)
+        nx.draw_networkx_labels(g,pos=positions,font_size=.5,font_color="#00cc00")
         plt.show()
     elif action == "ipsFromPickle":
         ipfilename = input("Name of ipfile: ") + ".txt"
@@ -164,6 +173,7 @@ while True:
         outputName = input("name of output pickle: ") + ".pkl"
         savename = outputName
         addOne()
+        exit()
     elif action == "toDataFrame":
         savename = input("pickle file to load: ") + ".pkl"
         loadGraph()
