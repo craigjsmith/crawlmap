@@ -11,16 +11,9 @@ g = nx.DiGraph() #graph object
 l = [] #list of last visited nodes in crawl
 savename = ""
 maxDepth = 0
-ipfile = open("iplist.txt","w",encoding = "utf-8")
-
-
-def saveIp(link):
-    try:
-        ipfile.write(socket.gethostbyname(link) + "\n")
-    except:
-        pass
 
 def getBaseAddress(url):
+    url = url.strip().rstrip()
     url = removeMostOfAddress(url)
     url = url.replace("https://","")
     url = url.replace("http://","")
@@ -87,7 +80,7 @@ def crawlAndBuild(startUrl,depth):
     else:
         html = html[0]
     linkList = getLinksFromHtml(html)
-    g.add_node(startUrl)
+    g.add_node(getBaseAddress(startUrl),size=1)
     counter = 1
     for link in linkList:
         fullLink = link
@@ -97,33 +90,48 @@ def crawlAndBuild(startUrl,depth):
         print("\t" * depth + "Starting " + str(counter) + " out of " + str(len(linkList)))
         counter = counter + 1
         g.add_node(link)
-        g.add_edge(startUrl,link)
-        saveIp(link)
+        g.add_edge(getBaseAddress(startUrl),link)
         crawlAndBuild(fullLink, depth + 1)
     if depth == 0:
         print("Finished Crawling")
 
-
-action = input("gather, or plot: ")
-if action == "gather":
-    maxDepth = int(input("Max Depth of Tree: "))
-    savename = input("Name to save map file: ") + ".pkl"
-    #load if the file exists
-    crawlAndBuild("https://www.hackerone.com/blog/hacker-blogs-we-love-reading",0)
-    saveGraph()
-    ipfile.close()
-elif action == "plot":
-    ipfile.close()
-    savename = input("name of pickle file to plot: ") + ".pkl"
-    loadGraph()
-    nx.draw(g,with_labels=True)
-    plt.show()
-
-
-
-
-
-
+while True:
+    action = input("Command (help for options): ")
+    if action == "gather":
+        maxDepth = int(input("Max Depth of Tree: "))
+        savename = input("Name to save map file: ") + ".pkl"
+        startingUrl = input("URL to start search: ")
+        #https://www.hackerone.com/blog/hacker-blogs-we-love-reading
+        crawlAndBuild(startingUrl,0)
+        saveGraph()
+    elif action == "plot":
+        savename = input("name of pickle file to plot: ") + ".pkl"
+        loadGraph()
+        nx.draw_circular(g,with_labels=True,font_size=1)
+        plt.show()
+    elif action == "ipsFromPickle":
+        ipfilename = input("Name of ipfile: ") + ".txt"
+        ipfile = open(ipfilename,"w",encoding = "utf-8")
+        savename = input("name of pickle file to get ips: ") + ".pkl"
+        print("Loading pickle file")
+        loadGraph()
+        print("Saving ips...")
+        for item in g.nodes():
+            try:
+                ipfile.write(socket.gethostbyname(item) + "\n")
+            except:
+                pass
+        ipfile.close()
+        print("Ips are saved in iplist.txt")
+    elif action == "exit":
+        exit()
+    elif action == "help":
+        print("gather")
+        print("plot")
+        print("ipsFromPickle")
+        print("exit")
+    else:
+        print("Not a valid command")
 
 ##g.add_node("name")
 ##g.add_edge("firstNode","ToSecondNode")
