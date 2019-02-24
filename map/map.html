@@ -4,6 +4,7 @@
 <head>
     <meta charset="utf-8">
     <title>Crawlmap</title>
+
     <style>
         /* Always set the map height explicitly to define the size of the div
        * element that contains the map. */
@@ -16,13 +17,30 @@
         margin: 0;
         padding: 0;
       }
+
+      #floating-panel {
+        position: absolute;
+        top: 10px;
+        z-index: 5;
+        background-color: #fff;
+        padding: 5px;
+        border: 1px solid #999;
+        text-align: center;
+        font-family: 'Roboto','sans-serif';
+        line-height: 30px;
+        left: 60%;
+        width: 20%;
+      }
+
     </style>
 </head>
 
 <body>
+    <div id="floating-panel">
+        <input type="file" id="files" name="files[]" multiple />
+    </div>
+          
 	<script type='text/javascript' src='maps_api.js'></script>
-
-    <input type="file" id="files" name="files[]" multiple />
     <output id="list"></output>
 	
     <script>
