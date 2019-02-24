@@ -12,6 +12,12 @@ l = [] #list of last visited nodes in crawl
 savename = ""
 maxDepth = 0
 
+def isInList(item, array):
+    for element in array:
+        if item == element:
+            return True
+    return False
+
 def getBaseAddress(url):
     url = url.strip().rstrip()
     url = removeMostOfAddress(url)
@@ -111,17 +117,27 @@ while True:
         plt.show()
     elif action == "ipsFromPickle":
         ipfilename = input("Name of ipfile: ") + ".txt"
-        ipfile = open(ipfilename,"w",encoding = "utf-8")
         savename = input("name of pickle file to get ips: ") + ".pkl"
         print("Loading pickle file")
         loadGraph()
         print("Saving ips...")
+        uniqueIps = []
+        totalList = []
         for item in g.nodes():
             try:
-                ipfile.write(socket.gethostbyname(item) + "\n")
+                ipNum = socket.gethostbyname(item)
             except:
-                pass
-        ipfile.close()
+                continue
+            try:
+                index = uniqueIps.index(ipNum)
+                totalList[index] = totalList[index] + 1
+            except:
+                uniqueIps.append(ipNum)
+                totalList.append(1)
+        ipFile = open(ipfilename,"w",encoding='utf-8')
+        for index in range(len(uniqueIps)):
+            ipFile.write(uniqueIps[index] + "," + str(totalList[index]) + "\n")
+        ipFile.close()
         print("Ips are saved in iplist.txt")
     elif action == "exit":
         exit()
