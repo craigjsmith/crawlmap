@@ -4,10 +4,8 @@ import pickle
 import matplotlib
 import matplotlib.pyplot as plt
 from urllib.request import urlopen
-import time
 import socket
 from networkx import convert_matrix
-
 import pandas as pd
 
 g = nx.DiGraph() #graph object
@@ -78,8 +76,16 @@ def getHtml(link):
     except:
         return False
 
-def addOne(listOfLinks):
-    pass
+def addOne():
+    print(len(l))
+    for link in l:
+        html = getHtml(link)
+        linkList = getLinksFromHtml(html)
+        for link2 in linkList:
+            g.add_node(getBaseAddress(link2))
+            g.add_edge(getBaseAddress(link),getBaseAddress(link2))
+    saveGraph()
+    
 
 def crawlAndBuild(startUrl,depth):
     lastRun = False
@@ -153,8 +159,11 @@ while True:
         ipFile.close()
         print("Ips are saved in iplist.txt")
     elif action == "addOne":
-        #filenameToLoad
-        pass
+        savename = input("pickle file to load: ") + ".pkl"
+        loadGraph()
+        outputName = input("name of output pickle: ") + ".pkl"
+        savename = outputName
+        addOne()
     elif action == "toDataFrame":
         savename = input("pickle file to load: ") + ".pkl"
         loadGraph()
