@@ -20,9 +20,11 @@
 </head>
 
 <body>
+	<script type='text/javascript' src='maps_api.js'></script>
+
     <input type="file" id="files" name="files[]" multiple />
     <output id="list"></output>
-
+	
     <script>
         function handleFileSelect(evt) {
             console.log("UPLOADED");
@@ -39,9 +41,11 @@
                             var lines = contents.split('\n');
 
                             for (var i = 0; i < lines.length; i++) {
-                                parts = lines[i].split(",");
-                                console.log("READ: " + parts[0], parts[1]);
-                                addLocation(parts[0], parts[1]);
+                                if(lines[i] != "") {
+                                    parts = lines[i].split(",");
+                                    console.log("READ: " + parts[0], parts[1]);
+                                    addLocation(parts[0], parts[1]);
+                                }
                             }
                             initMap();
                         }
@@ -118,9 +122,9 @@
         function getPoints() {
 
             return locations;
-        }
+        }z
     </script>
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key= AIzaSyC9XeNY7D97RCMVhkhZNJB7jQ7gz0lXlcg&libraries=visualization&callback=initMap">
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC9XeNY7D97RCMVhkhZNJB7jQ7gz0lXlcg&libraries=visualization&callback=initMap">
     </script>
 </body>
 

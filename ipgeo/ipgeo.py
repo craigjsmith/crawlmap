@@ -3,13 +3,13 @@ from urllib.request import urlopen
 
 output = open("locations.txt", "w")
 
-ips = 'ips.txt'  
+ips = '../scraper/ips.txt'  
 with open(ips) as fp:  
    line = fp.readline()
    while line:
         try:
             print(line)
-            apicall = "http://api.ipstack.com/" + line.rstrip() + "?access_key=a8b8d0606d4a392c76c248be3dafc552"
+            apicall = "http://api.ipstack.com/" + line.split(",")[0].rstrip() + "?access_key=a8b8d0606d4a392c76c248be3dafc552"
             print(apicall)
             response = urlopen(apicall).read()
         except:
@@ -21,7 +21,7 @@ with open(ips) as fp:
       
         occur = int(line.split(",")[1])
         for i in range(occur):
-            output.write(str(lat) + "," + str(lon))
+            output.write(str(lat) + "," + str(lon) + "\n")
 
         line = fp.readline()
 
