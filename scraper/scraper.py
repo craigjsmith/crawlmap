@@ -12,7 +12,6 @@ g = nx.DiGraph() #graph object
 l = [] #list of last visited nodes in crawl
 savename = ""
 maxDepth = 0
-ipfile = open("iplist.txt","w",encoding = "utf-8")
 
 
 def saveIp(link):
@@ -106,8 +105,8 @@ def crawlAndBuild(startUrl,depth):
         print("Finished Crawling")
 
 while True:
+    ipfile = open("iplist.txt","w",encoding = "utf-8")
     action = input("Command (help for options): ")
-    clear = True
     if action == "gather":
         maxDepth = int(input("Max Depth of Tree: "))
         savename = input("Name to save map file: ") + ".pkl"
@@ -115,28 +114,29 @@ while True:
         #https://www.hackerone.com/blog/hacker-blogs-we-love-reading
         crawlAndBuild(startingUrl,0)
         saveGraph()
-        ipfile.close()
     elif action == "plot":
-        ipfile.close()
         savename = input("name of pickle file to plot: ") + ".pkl"
         loadGraph()
         nx.draw(g,with_labels=True)
         plt.show()
     elif action == "ipsFromPickle":
-        pass
+        savename = input("name of pickle file to get ips: ") + ".pkl"
+        print("Loading pickle file")
+        loadGraph()
+        print("Saving ips...")
+        for item in g.nodes():
+            saveIp(item)
+        print("Ips are saved in iplist.txt")
     elif action == "exit":
         exit()
     elif action == "help":
-        clear = False
         print("gather")
         print("plot")
         print("ipsFromPickle")
         print("exit")
     else:
         print("Not a valid command")
-        clear = False
-    if clear:
-        os.system('cls' if os.name == 'nt' else 'clear')
+    ipfile.close()
 
 ##g.add_node("name")
 ##g.add_edge("firstNode","ToSecondNode")
