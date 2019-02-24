@@ -6,4 +6,5 @@ Crawls websites for URLs and plots a geographical heat map of server locations a
 ![Geo Map](assets/geographicalmap.jpg)
 Geographical heatmap uses Google Maps API for plotting and IPStack API for geolocation.
 
+![Geo Map](assets/networkmap.png)
 Networkmap uses MatPlotLib and NetworkX for plotting
