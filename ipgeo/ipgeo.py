@@ -2,7 +2,6 @@ import json
 from urllib.request import urlopen
 
 output = open("locations.txt", "w")
-first = True
 
 ips = 'ips.txt'  
 with open(ips) as fp:  
@@ -19,12 +18,10 @@ with open(ips) as fp:
         data = json.loads(response)
         lat = data["latitude"]
         lon = data["longitude"]
-
-        if(not first):
-            output.write("\n")
-
-        first = False        
-        output.write(str(lat) + "," + str(lon))
+      
+        occur = int(line.split(",")[1])
+        for i in range(occur):
+            output.write(str(lat) + "," + str(lon))
 
         line = fp.readline()
 
