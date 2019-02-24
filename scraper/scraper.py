@@ -6,6 +6,9 @@ import matplotlib.pyplot as plt
 from urllib.request import urlopen
 import time
 import socket
+from networkx import convert_matrix
+
+import pandas as pd
 
 g = nx.DiGraph() #graph object
 l = [] #list of last visited nodes in crawl
@@ -75,9 +78,15 @@ def getHtml(link):
     except:
         return False
 
+def addOne(listOfLinks):
+    pass
+
 def crawlAndBuild(startUrl,depth):
+    lastRun = False
     if depth >= maxDepth:
         return
+    if depth == maxDepth - 1:
+        lastRun = True
     global g
     global l
     html = getHtml(startUrl)
@@ -86,8 +95,12 @@ def crawlAndBuild(startUrl,depth):
     else:
         html = html[0]
     linkList = getLinksFromHtml(html)
-    g.add_node(getBaseAddress(startUrl),size=1)
+    g.add_node(getBaseAddress(startUrl))
     counter = 1
+    if lastRun:
+        for link in linkList:
+            if not isInList(link,linkList):
+                l.append(link)
     for link in linkList:
         fullLink = link
         link = getBaseAddress(link)
@@ -113,7 +126,7 @@ while True:
     elif action == "plot":
         savename = input("name of pickle file to plot: ") + ".pkl"
         loadGraph()
-        nx.draw_circular(g,with_labels=True,font_size=1)
+        nx.draw_circular(g,with_labels=True,font_size=1,node_size=2)
         plt.show()
     elif action == "ipsFromPickle":
         ipfilename = input("Name of ipfile: ") + ".txt"
@@ -139,6 +152,16 @@ while True:
             ipFile.write(uniqueIps[index] + "," + str(totalList[index]) + "\n")
         ipFile.close()
         print("Ips are saved in iplist.txt")
+    elif action == "addOne":
+        #filenameToLoad
+        pass
+    elif action == "toDataFrame":
+        savename = input("pickle file to load: ") + ".pkl"
+        loadGraph()
+        filename = input("name of csv file to output: ") + ".csv"
+        print("Graph has " + str(len(g.nodes())) + " nodes")
+        df = convert_matrix.to_pandas_adjacency(g)
+        export_csv = df.to_csv(filename, index = None, header=True)
     elif action == "exit":
         exit()
     elif action == "help":
@@ -146,6 +169,8 @@ while True:
         print("plot")
         print("ipsFromPickle")
         print("exit")
+        print("addOne")
+        print("toDataFrame")
     else:
         print("Not a valid command")
 
