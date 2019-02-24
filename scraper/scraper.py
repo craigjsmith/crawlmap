@@ -6,19 +6,11 @@ import matplotlib.pyplot as plt
 from urllib.request import urlopen
 import time
 import socket
-import os
 
 g = nx.DiGraph() #graph object
 l = [] #list of last visited nodes in crawl
 savename = ""
 maxDepth = 0
-
-
-def saveIp(link):
-    try:
-        ipfile.write(socket.gethostbyname(link) + "\n")
-    except:
-        pass
 
 def getBaseAddress(url):
     url = url.strip().rstrip()
@@ -88,7 +80,7 @@ def crawlAndBuild(startUrl,depth):
     else:
         html = html[0]
     linkList = getLinksFromHtml(html)
-    g.add_node(startUrl)
+    g.add_node(getBaseAddress(startUrl),size=1)
     counter = 1
     for link in linkList:
         fullLink = link
@@ -99,13 +91,11 @@ def crawlAndBuild(startUrl,depth):
         counter = counter + 1
         g.add_node(link)
         g.add_edge(getBaseAddress(startUrl),link)
-        saveIp(link)
         crawlAndBuild(fullLink, depth + 1)
     if depth == 0:
         print("Finished Crawling")
 
 while True:
-    ipfile = open("iplist.txt","w",encoding = "utf-8")
     action = input("Command (help for options): ")
     if action == "gather":
         maxDepth = int(input("Max Depth of Tree: "))
@@ -117,15 +107,21 @@ while True:
     elif action == "plot":
         savename = input("name of pickle file to plot: ") + ".pkl"
         loadGraph()
-        nx.draw(g,with_labels=True)
+        nx.draw_circular(g,with_labels=True,font_size=1)
         plt.show()
     elif action == "ipsFromPickle":
+        ipfilename = input("Name of ipfile: ") + ".txt"
+        ipfile = open(ipfilename,"w",encoding = "utf-8")
         savename = input("name of pickle file to get ips: ") + ".pkl"
         print("Loading pickle file")
         loadGraph()
         print("Saving ips...")
         for item in g.nodes():
-            saveIp(item)
+            try:
+                ipfile.write(socket.gethostbyname(item) + "\n")
+            except:
+                pass
+        ipfile.close()
         print("Ips are saved in iplist.txt")
     elif action == "exit":
         exit()
@@ -136,7 +132,6 @@ while True:
         print("exit")
     else:
         print("Not a valid command")
-    ipfile.close()
 
 ##g.add_node("name")
 ##g.add_edge("firstNode","ToSecondNode")
